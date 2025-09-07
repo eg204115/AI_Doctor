@@ -12,6 +12,7 @@ import hashlib
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
+import uuid
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your_fallback_secret_key_here')
@@ -32,11 +33,15 @@ DB_NAME = os.environ.get('DB_NAME', 'medical_chatbot')
 client = None
 db = None
 users_collection = None
+chat_sessions_collection = None
+messages_collection = None
 
 try:
     client = MongoClient(MONGO_URI)
     db = client[DB_NAME]
     users_collection = db['users']
+    chat_sessions_collection = db['chat_sessions']
+    messages_collection = db['messages']
     print("Connected to MongoDB successfully")
 except Exception as e:
     print(f"Error connecting to MongoDB: {e}")
@@ -72,9 +77,102 @@ rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 @app.route("/")
 def index():
     if 'user_id' in session:
-        return render_template('chat.html')
+        # Get user's chat sessions
+        user_id = session['user_id']
+        chat_sessions = list(chat_sessions_collection.find(
+            {"user_id": user_id}
+        ).sort("last_activity", -1))
+        
+        # Get current session ID or create a new one
+        current_session_id = session.get('current_session_id')
+        if not current_session_id:
+            # Create a new chat session
+            new_session = {
+                "user_id": user_id,
+                "title": "New Chat",
+                "created_at": datetime.utcnow(),
+                "last_activity": datetime.utcnow(),
+                "message_count": 0
+            }
+            result = chat_sessions_collection.insert_one(new_session)
+            current_session_id = str(result.inserted_id)
+            session['current_session_id'] = current_session_id
+        
+        # Get messages for current session
+        messages = list(messages_collection.find(
+            {"session_id": current_session_id}
+        ).sort("timestamp", 1))
+        
+        return render_template('chat.html', 
+                             chat_sessions=chat_sessions,
+                             current_session_id=current_session_id,
+                             messages=messages)
     else:
         return redirect(url_for('login'))
+
+@app.route("/session/<session_id>")
+def switch_session(session_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # Verify the session belongs to the user
+    session_obj = chat_sessions_collection.find_one({
+        "_id": ObjectId(session_id),
+        "user_id": session['user_id']
+    })
+    
+    if session_obj:
+        session['current_session_id'] = session_id
+        flash('Switched to selected chat session', 'info')
+    else:
+        flash('Invalid chat session', 'error')
+    
+    return redirect(url_for('index'))
+
+@app.route("/session/new")
+def new_session():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # Create a new chat session
+    new_session = {
+        "user_id": session['user_id'],
+        "title": "New Chat",
+        "created_at": datetime.utcnow(),
+        "last_activity": datetime.utcnow(),
+        "message_count": 0
+    }
+    result = chat_sessions_collection.insert_one(new_session)
+    session['current_session_id'] = str(result.inserted_id)
+    
+    flash('Started a new chat session', 'info')
+    return redirect(url_for('index'))
+
+@app.route("/session/delete/<session_id>")
+def delete_session(session_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # Verify the session belongs to the user
+    session_obj = chat_sessions_collection.find_one({
+        "_id": ObjectId(session_id),
+        "user_id": session['user_id']
+    })
+    
+    if session_obj:
+        # Delete the session and all its messages
+        chat_sessions_collection.delete_one({"_id": ObjectId(session_id)})
+        messages_collection.delete_many({"session_id": session_id})
+        
+        # If deleting current session, switch to a new one
+        if session.get('current_session_id') == session_id:
+            session.pop('current_session_id', None)
+        
+        flash('Chat session deleted', 'info')
+    else:
+        flash('Invalid chat session', 'error')
+    
+    return redirect(url_for('index'))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -93,6 +191,8 @@ def login():
             if user:
                 session['user_id'] = str(user['_id'])
                 session['username'] = user['username']
+                # Clear any previous session ID
+                session.pop('current_session_id', None)
                 # Update last login time
                 users_collection.update_one(
                     {"_id": user['_id']},
@@ -146,17 +246,67 @@ def logout():
     flash('You have been logged out successfully.', 'info')
     return redirect(url_for('login'))
 
-@app.route("/get", methods=["GET", "POST"])
+@app.route("/get", methods=["POST"])
 def chat():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return jsonify({"error": "Not authenticated"}), 401
+        
+    current_session_id = session.get('current_session_id')
+    if not current_session_id:
+        return jsonify({"error": "No active session"}), 400
         
     msg = request.form["msg"]
     input = msg
     print(input)
+    
+    # Save user message to database
+    user_message = {
+        "session_id": current_session_id,
+        "user_id": session['user_id'],
+        "content": msg,
+        "sender": "user",
+        "timestamp": datetime.utcnow()
+    }
+    messages_collection.insert_one(user_message)
+    
+    # Get AI response
     response = rag_chain.invoke({"input": msg})
-    print("Response : ", response["answer"])
-    return str(response["answer"])
+    answer = str(response["answer"])
+    print("Response : ", answer)
+    
+    # Save AI response to database
+    ai_message = {
+        "session_id": current_session_id,
+        "user_id": session['user_id'],
+        "content": answer,
+        "sender": "ai",
+        "timestamp": datetime.utcnow()
+    }
+    messages_collection.insert_one(ai_message)
+    
+    # Update session activity and message count
+    chat_sessions_collection.update_one(
+        {"_id": ObjectId(current_session_id)},
+        {
+            "$set": {"last_activity": datetime.utcnow()},
+            "$inc": {"message_count": 2}  # Count both user and AI messages
+        }
+    )
+    
+    # Update session title if it's the first message
+    session_obj = chat_sessions_collection.find_one({"_id": ObjectId(current_session_id)})
+    if session_obj and session_obj.get('message_count', 0) <= 2:  # First exchange
+        # Create a title from the first message (truncate if too long)
+        title = msg[:30] + "..." if len(msg) > 30 else msg
+        if not title.strip():
+            title = "New Chat"
+            
+        chat_sessions_collection.update_one(
+            {"_id": ObjectId(current_session_id)},
+            {"$set": {"title": title}}
+        )
+    
+    return answer
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)

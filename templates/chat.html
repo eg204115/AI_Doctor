@@ -1,2598 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-	<head>
-		<title>Medical Chatbot</title>
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-		<style>
-			:root {
-				--primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-				--medical-primary: #2563eb;
-				--medical-secondary: #06b6d4;
-				--medical-accent: #10b981;
-				--bg-primary: #f8fafc;
-				--bg-secondary: #f1f5f9;
-				--text-primary: #1e293b;
-				--text-secondary: #64748b;
-				--border-color: #e2e8f0;
-				--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-				--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-				--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-				--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-			}
-
-			* {
-				margin: 0;
-				padding: 0;
-				box-sizing: border-box;
-			}
-
-			body, html {
-				height: 100%;
-				font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-				color: var(--text-primary);
-			}
-
-			.container-fluid {
-				padding: 20px;
-			}
-
-			.chat {
-				margin-top: auto;
-				margin-bottom: auto;
-			}
-
-			.card {
-				height: 600px;
-				border-radius: 20px !important;
-				background: rgba(255, 255, 255, 0.95) !important;
-				backdrop-filter: blur(20px);
-				border: 1px solid rgba(255, 255, 255, 0.2) !important;
-				box-shadow: var(--shadow-xl);
-				overflow: hidden;
-			}
-
-			.card-header {
-				border-radius: 20px 20px 0 0 !important;
-				border-bottom: 1px solid var(--border-color) !important;
-				background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-				padding: 24px !important;
-			}
-
-			.card-footer {
-				border-radius: 0 0 20px 20px !important;
-				border-top: 1px solid var(--border-color) !important;
-				background: white !important;
-				padding: 24px !important;
-			}
-
-			.msg_card_body {
-				overflow-y: auto;
-				background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
-				padding: 20px;
-				height: calc(100% - 140px);
-			}
-
-			.user_img {
-				height: 50px;
-				width: 50px;
-				border: 3px solid rgba(255, 255, 255, 0.9);
-				border-radius: 15px !important;
-				object-fit: cover;
-			}
-
-			.user_img_msg {
-				height: 40px;
-				width: 40px;
-				border: 2px solid rgba(255, 255, 255, 0.9);
-				border-radius: 12px !important;
-				object-fit: cover;
-			}
-
-			.img_cont {
-				position: relative;
-				height: 50px;
-				width: 50px;
-			}
-
-			.img_cont_msg {
-				height: 40px;
-				width: 40px;
-				position: relative;
-			}
-
-			.online_icon {
-				position: absolute;
-				height: 16px;
-				width: 16px;
-				background: var(--medical-accent);
-				border-radius: 50%;
-				bottom: -2px;
-				right: -2px;
-				border: 3px solid white;
-				box-shadow: var(--shadow-sm);
-				animation: pulse 2s infinite;
-			}
-
-			@keyframes pulse {
-				0% { transform: scale(1); }
-				50% { transform: scale(1.1); }
-				100% { transform: scale(1); }
-			}
-
-			.user_info {
-				margin-left: 15px;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-			}
-
-			.user_info span {
-				font-size: 18px;
-				font-weight: 600;
-				color: var(--text-primary);
-				margin-bottom: 2px;
-			}
-
-			.user_info p {
-				font-size: 14px;
-				color: var(--text-secondary);
-				margin: 0;
-			}
-
-			.msg_cotainer {
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: linear-gradient(135deg, var(--medical-primary), var(--medical-secondary));
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: white;
-				max-width: 70%;
-				animation: fadeInLeft 0.5s ease;
-				margin-bottom: 25px;
-			}
-
-			.msg_cotainer_send {
-				margin-right: 10px;
-				border-radius: 20px 20px 8px 20px;
-				background: linear-gradient(135deg, var(--medical-accent), #22c55e);
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: white;
-				max-width: 70%;
-				animation: fadeInRight 0.5s ease;
-				margin-bottom: 25px;
-			}
-
-			.msg_time {
-				position: absolute;
-				left: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.msg_time_send {
-				position: absolute;
-				right: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.type_msg {
-				background: var(--bg-secondary) !important;
-				border: 2px solid var(--border-color) !important;
-				color: var(--text-primary) !important;
-				border-radius: 15px 0 0 15px !important;
-				padding: 12px 16px !important;
-				font-size: 15px;
-				transition: all 0.3s ease;
-				font-family: inherit;
-			}
-
-			.type_msg:focus {
-				box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-				outline: 0px !important;
-				border-color: var(--medical-primary) !important;
-			}
-
-			.type_msg::placeholder {
-				color: var(--text-secondary);
-			}
-
-			.send_btn {
-				background: var(--primary-gradient) !important;
-				border: none !important;
-				color: white !important;
-				border-radius: 0 15px 15px 0 !important;
-				padding: 12px 20px !important;
-				transition: all 0.3s ease;
-				font-weight: 500;
-				cursor: pointer;
-			}
-
-			.send_btn:hover {
-				transform: translateY(-1px);
-				box-shadow: var(--shadow-md);
-			}
-
-			.send_btn:active {
-				transform: translateY(0);
-			}
-
-			.input-group {
-				border-radius: 15px;
-				overflow: hidden;
-				box-shadow: var(--shadow-sm);
-			}
-
-			/* Welcome message */
-			.welcome-message {
-				text-align: center;
-				padding: 40px 20px;
-				color: var(--text-secondary);
-			}
-
-			.welcome-message h4 {
-				color: var(--medical-primary);
-				font-weight: 600;
-				margin-bottom: 10px;
-			}
-
-			.welcome-message p {
-				font-size: 14px;
-				line-height: 1.5;
-			}
-
-			.bot-icon {
-				width: 60px;
-				height: 60px;
-				background: var(--primary-gradient);
-				border-radius: 15px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				margin: 0 auto 20px;
-				color: white;
-				font-size: 24px;
-			}
-
-			/* Quick actions */
-			.quick-actions {
-				display: flex;
-				gap: 8px;
-				margin-bottom: 20px;
-				flex-wrap: wrap;
-				justify-content: center;
-			}
-
-			.quick-action {
-				padding: 8px 16px;
-				background: rgba(37, 99, 235, 0.1);
-				color: var(--medical-primary);
-				border: 1px solid rgba(37, 99, 235, 0.2);
-				border-radius: 20px;
-				font-size: 13px;
-				cursor: pointer;
-				transition: all 0.3s ease;
-				font-weight: 500;
-			}
-
-			.quick-action:hover {
-				background: var(--medical-primary);
-				color: white;
-				transform: translateY(-1px);
-			}
-
-			/* Animations */
-			@keyframes fadeInLeft {
-				from { 
-					opacity: 0; 
-					transform: translateX(-20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			@keyframes fadeInRight {
-				from { 
-					opacity: 0; 
-					transform: translateX(20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			/* Custom Scrollbar */
-			.msg_card_body::-webkit-scrollbar {
-				width: 6px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-track {
-				background: transparent;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb {
-				background: var(--border-color);
-				border-radius: 3px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb:hover {
-				background: var(--text-secondary);
-			}
-
-			/* Typing indicator */
-			.typing-indicator {
-				display: flex;
-				align-items: center;
-				padding: 16px 20px;
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: #f1f5f9;
-				color: var(--text-secondary);
-				max-width: 70%;
-				margin-bottom: 25px;
-			}
-
-			.typing-dots {
-				display: flex;
-				gap: 4px;
-			}
-
-			.typing-dots span {
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				background: var(--text-secondary);
-				animation: typing 1.4s infinite;
-			}
-
-			.typing-dots span:nth-child(2) {
-				animation-delay: 0.2s;
-			}
-
-			.typing-dots span:nth-child(3) {
-				animation-delay: 0.4s;
-			}
-
-			@keyframes typing {
-				0%, 60%, 100% {
-					transform: translateY(0);
-					opacity: 0.5;
-				}
-				30% {
-					transform: translateY(-10px);
-					opacity: 1;
-				}
-			}
-
-			/* Responsive Design */
-			@media(max-width: 768px) {
-				.msg_cotainer,
-				.msg_cotainer_send {
-					max-width: 85%;
-				}
-				
-				.card {
-					height: 90vh;
-					border-radius: 15px !important;
-				}
-				
-				.card-header,
-				.card-footer {
-					padding: 16px !important;
-				}
-
-				.container-fluid {
-					padding: 10px;
-				}
-			}
-		</style>
-	</head>
-	
-	<body>
-		<div class="container-fluid h-100">
-			<div class="row justify-content-center h-100">		
-				<div class="col-md-8 col-xl-6 chat">
-					<div class="card">
-						<div class="card-header msg_head">
-							<div class="d-flex bd-highlight">
-								<div class="img_cont">
-									<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img">
-									<span class="online_icon"></span>
-								</div>
-								<div class="user_info">
-									<span>Medical AI Assistant</span>
-									<p>🩺 Here to help with your health questions</p>
-								</div>
-							</div>
-						</div>
-						<div id="messageFormeight" class="card-body msg_card_body">
-							<div class="welcome-message">
-								<div class="bot-icon">
-									<i class="fas fa-stethoscope"></i>
-								</div>
-								<h4>Welcome to Medical AI Assistant</h4>
-								<p>I'm here to help answer your health and medical questions. Please note that I provide general information and should not replace professional medical advice.</p>
-								<div class="quick-actions">
-									<div class="quick-action" onclick="setMessage('Tell me about common symptoms of flu')">💊 Flu Symptoms</div>
-									<div class="quick-action" onclick="setMessage('What are the benefits of regular exercise?')">🏃‍♂️ Exercise Benefits</div>
-									<div class="quick-action" onclick="setMessage('How much water should I drink daily?')">💧 Daily Water Intake</div>
-									<div class="quick-action" onclick="setMessage('What foods are good for immunity?')">🥗 Immunity Foods</div>
-								</div>
-							</div>
-						</div>
-						<div class="card-footer">
-							<form id="messageArea" class="input-group">
-                                <input type="text" id="text" name="msg" placeholder="Ask me about your health concerns..." autocomplete="off" class="form-control type_msg" required/>
-								<div class="input-group-append">
-									<button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-paper-plane"></i></button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<script>
-			function setMessage(message) {
-				document.getElementById('text').value = message;
-				document.getElementById('text').focus();
-				// Hide welcome message after first interaction
-				const welcomeMsg = document.querySelector('.welcome-message');
-				if (welcomeMsg) {
-					welcomeMsg.style.display = 'none';
-				}
-			}
-
-			function showTyping() {
-				const typingHtml = '<div class="d-flex justify-content-start mb-4" id="typing-indicator"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>';
-				$("#messageFormeight").append(typingHtml);
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			}
-
-			function hideTyping() {
-				$("#typing-indicator").remove();
-			}
-
-			$(document).ready(function() {
-				$("#messageArea").on("submit", function(event) {
-					const date = new Date();
-					const hour = date.getHours();
-					const minute = date.getMinutes();
-					const str_time = hour+":"+minute;
-					var rawText = $("#text").val();
-
-					// Hide welcome message on first message
-					const welcomeMsg = document.querySelector('.welcome-message');
-					if (welcomeMsg) {
-						welcomeMsg.style.display = 'none';
-					}
-
-					var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">'+ str_time + '</span></div><div class="img_cont_msg"><img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="rounded-circle user_img_msg"></div></div>';
-					
-					$("#text").val("");
-					$("#messageFormeight").append(userHtml);
-					$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-
-					// Show typing indicator
-					showTyping();
-
-					$.ajax({
-						data: {
-							msg: rawText,	
-						},
-						type: "POST",
-						url: "/get",
-					}).done(function(data) {
-						// Hide typing indicator
-						hideTyping();
-						
-						var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data + '<span class="msg_time">' + str_time + '</span></div></div>';
-						$("#messageFormeight").append($.parseHTML(botHtml));
-						$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-					});
-					event.preventDefault();
-				});
-
-				// Auto-scroll to bottom on page load
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			});
-		</script>
-        
-    </body>
-</html> -->
-
-<!-- <!DOCTYPE html>
-<html>
-	<head>
-		<title>Medical Chatbot</title>
-		<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/387/387569.png" type="image/png">
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-		<style>
-			:root {
-				--primary-gradient: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
-				--medical-primary: #ff6b6b;
-				--medical-secondary: #4ecdc4;
-				--medical-accent: #45b7d1;
-				--bg-primary: #f8fafc;
-				--bg-secondary: #f1f5f9;
-				--text-primary: #2d3748;
-				--text-secondary: #718096;
-				--border-color: #e2e8f0;
-				--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-				--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-				--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-				--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-			}
-
-			* {
-				margin: 0;
-				padding: 0;
-				box-sizing: border-box;
-			}
-
-			body, html {
-				height: 100%;
-				font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-				background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 30%, #fecfef 70%, #ff9a9e 100%);
-				color: var(--text-primary);
-			}
-
-			.container-fluid {
-				padding: 20px;
-			}
-
-			.chat {
-				margin-top: auto;
-				margin-bottom: auto;
-			}
-
-			.card {
-				height: 600px;
-				border-radius: 20px !important;
-				background: rgba(255, 255, 255, 0.95) !important;
-				backdrop-filter: blur(20px);
-				border: 1px solid rgba(255, 255, 255, 0.2) !important;
-				box-shadow: var(--shadow-xl);
-				overflow: hidden;
-			}
-
-			.card-header {
-				border-radius: 20px 20px 0 0 !important;
-				border-bottom: 1px solid var(--border-color) !important;
-				background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-				padding: 24px !important;
-			}
-
-			.card-footer {
-				border-radius: 0 0 20px 20px !important;
-				border-top: 1px solid var(--border-color) !important;
-				background: white !important;
-				padding: 24px !important;
-			}
-
-			.msg_card_body {
-				overflow-y: auto;
-				background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
-				padding: 20px;
-				height: calc(100% - 140px);
-			}
-
-			.user_img {
-				height: 50px;
-				width: 50px;
-				border: 3px solid rgba(255, 255, 255, 0.9);
-				border-radius: 15px !important;
-				object-fit: cover;
-			}
-
-			.user_img_msg {
-				height: 40px;
-				width: 40px;
-				border: 2px solid rgba(255, 255, 255, 0.9);
-				border-radius: 12px !important;
-				object-fit: cover;
-			}
-
-			.img_cont {
-				position: relative;
-				height: 50px;
-				width: 50px;
-			}
-
-			.img_cont_msg {
-				height: 40px;
-				width: 40px;
-				position: relative;
-			}
-
-			.online_icon {
-				position: absolute;
-				height: 16px;
-				width: 16px;
-				background: var(--medical-accent);
-				border-radius: 50%;
-				bottom: -2px;
-				right: -2px;
-				border: 3px solid white;
-				box-shadow: var(--shadow-sm);
-				animation: pulse 2s infinite;
-			}
-
-			@keyframes pulse {
-				0% { transform: scale(1); }
-				50% { transform: scale(1.1); }
-				100% { transform: scale(1); }
-			}
-
-			.user_info {
-				margin-left: 15px;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-			}
-
-			.user_info span {
-				font-size: 18px;
-				font-weight: 600;
-				color: var(--text-primary);
-				margin-bottom: 2px;
-			}
-
-			.user_info p {
-				font-size: 14px;
-				color: var(--text-secondary);
-				margin: 0;
-			}
-
-			.msg_cotainer {
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: white;
-				max-width: 70%;
-				animation: fadeInLeft 0.5s ease;
-				margin-bottom: 25px;
-			}
-
-			.msg_cotainer_send {
-				margin-right: 10px;
-				border-radius: 20px 20px 8px 20px;
-				background: linear-gradient(135deg, #45b7d1, #4ecdc4);
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: white;
-				max-width: 70%;
-				animation: fadeInRight 0.5s ease;
-				margin-bottom: 25px;
-			}
-
-			.msg_time {
-				position: absolute;
-				left: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.msg_time_send {
-				position: absolute;
-				right: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.type_msg {
-				background: var(--bg-secondary) !important;
-				border: 2px solid var(--border-color) !important;
-				color: var(--text-primary) !important;
-				border-radius: 15px 0 0 15px !important;
-				padding: 12px 16px !important;
-				font-size: 15px;
-				transition: all 0.3s ease;
-				font-family: inherit;
-			}
-
-			.type_msg:focus {
-				box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-				outline: 0px !important;
-				border-color: var(--medical-primary) !important;
-			}
-
-			.type_msg::placeholder {
-				color: var(--text-secondary);
-			}
-
-			.send_btn {
-				background: var(--primary-gradient) !important;
-				border: none !important;
-				color: white !important;
-				border-radius: 0 15px 15px 0 !important;
-				padding: 12px 20px !important;
-				transition: all 0.3s ease;
-				font-weight: 500;
-				cursor: pointer;
-			}
-
-			.send_btn:hover {
-				transform: translateY(-1px);
-				box-shadow: var(--shadow-md);
-			}
-
-			.send_btn:active {
-				transform: translateY(0);
-			}
-
-			.input-group {
-				border-radius: 15px;
-				overflow: hidden;
-				box-shadow: var(--shadow-sm);
-			}
-
-			/* Welcome message */
-			.welcome-message {
-				text-align: center;
-				padding: 40px 20px;
-				color: var(--text-secondary);
-			}
-
-			.welcome-message h4 {
-				color: var(--medical-primary);
-				font-weight: 600;
-				margin-bottom: 10px;
-			}
-
-			.welcome-message p {
-				font-size: 14px;
-				line-height: 1.5;
-			}
-
-			.bot-icon {
-				width: 60px;
-				height: 60px;
-				background: var(--primary-gradient);
-				border-radius: 15px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				margin: 0 auto 20px;
-				color: white;
-				font-size: 24px;
-			}
-
-			/* Quick actions */
-			.quick-actions {
-				display: flex;
-				gap: 8px;
-				margin-bottom: 20px;
-				flex-wrap: wrap;
-				justify-content: center;
-			}
-
-			.quick-action {
-				padding: 8px 16px;
-				background: rgba(255, 107, 107, 0.1);
-				color: var(--medical-primary);
-				border: 1px solid rgba(255, 107, 107, 0.2);
-				border-radius: 20px;
-				font-size: 13px;
-				cursor: pointer;
-				transition: all 0.3s ease;
-				font-weight: 500;
-			}
-
-			.quick-action:hover {
-				background: var(--medical-primary);
-				color: white;
-				transform: translateY(-1px);
-			}
-
-			/* Animations */
-			@keyframes fadeInLeft {
-				from { 
-					opacity: 0; 
-					transform: translateX(-20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			@keyframes fadeInRight {
-				from { 
-					opacity: 0; 
-					transform: translateX(20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			/* Custom Scrollbar */
-			.msg_card_body::-webkit-scrollbar {
-				width: 6px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-track {
-				background: transparent;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb {
-				background: var(--border-color);
-				border-radius: 3px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb:hover {
-				background: var(--text-secondary);
-			}
-
-			/* Typing indicator */
-			.typing-indicator {
-				display: flex;
-				align-items: center;
-				padding: 16px 20px;
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: #f1f5f9;
-				color: var(--text-secondary);
-				max-width: 70%;
-				margin-bottom: 25px;
-			}
-
-			.typing-dots {
-				display: flex;
-				gap: 4px;
-			}
-
-			.typing-dots span {
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				background: var(--text-secondary);
-				animation: typing 1.4s infinite;
-			}
-
-			.typing-dots span:nth-child(2) {
-				animation-delay: 0.2s;
-			}
-
-			.typing-dots span:nth-child(3) {
-				animation-delay: 0.4s;
-			}
-
-			@keyframes typing {
-				0%, 60%, 100% {
-					transform: translateY(0);
-					opacity: 0.5;
-				}
-				30% {
-					transform: translateY(-10px);
-					opacity: 1;
-				}
-			}
-
-			/* Responsive Design */
-			@media(max-width: 768px) {
-				.msg_cotainer,
-				.msg_cotainer_send {
-					max-width: 85%;
-				}
-				
-				.card {
-					height: 90vh;
-					border-radius: 15px !important;
-				}
-				
-				.card-header,
-				.card-footer {
-					padding: 16px !important;
-				}
-
-				.container-fluid {
-					padding: 10px;
-				}
-			}
-		</style>
-	</head>
-	
-	<body>
-		<div class="container-fluid h-100">
-			<div class="row justify-content-center h-100">		
-				<div class="col-md-8 col-xl-6 chat">
-					<div class="card">
-						<div class="card-header msg_head">
-							<div class="d-flex bd-highlight">
-								<div class="img_cont">
-									<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img">
-									<span class="online_icon"></span>
-								</div>
-								<div class="user_info">
-									<span>Medical AI Assistant</span>
-									<p>🩺 Here to help with your health questions</p>
-								</div>
-							</div>
-						</div>
-						<div id="messageFormeight" class="card-body msg_card_body">
-							<div class="welcome-message">
-								<div class="bot-icon">
-									<i class="fas fa-stethoscope"></i>
-								</div>
-								<h4>Welcome to Medical AI Assistant</h4>
-								<p>I'm here to help answer your health and medical questions. Please note that I provide general information and should not replace professional medical advice.</p>
-								<div class="quick-actions">
-									<div class="quick-action" onclick="setMessage('Tell me about common symptoms of flu')">💊 Flu Symptoms</div>
-									<div class="quick-action" onclick="setMessage('What are the benefits of regular exercise?')">🏃‍♂️ Exercise Benefits</div>
-									<div class="quick-action" onclick="setMessage('How much water should I drink daily?')">💧 Daily Water Intake</div>
-									<div class="quick-action" onclick="setMessage('What foods are good for immunity?')">🥗 Immunity Foods</div>
-								</div>
-							</div>
-						</div>
-						<div class="card-footer">
-							<form id="messageArea" class="input-group">
-                                <input type="text" id="text" name="msg" placeholder="Ask me about your health concerns..." autocomplete="off" class="form-control type_msg" required/>
-								<div class="input-group-append">
-									<button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-paper-plane"></i></button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<script>
-			function setMessage(message) {
-				document.getElementById('text').value = message;
-				document.getElementById('text').focus();
-				// Hide welcome message after first interaction
-				const welcomeMsg = document.querySelector('.welcome-message');
-				if (welcomeMsg) {
-					welcomeMsg.style.display = 'none';
-				}
-			}
-
-			function showTyping() {
-				const typingHtml = '<div class="d-flex justify-content-start mb-4" id="typing-indicator"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>';
-				$("#messageFormeight").append(typingHtml);
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			}
-
-			function hideTyping() {
-				$("#typing-indicator").remove();
-			}
-
-			$(document).ready(function() {
-				$("#messageArea").on("submit", function(event) {
-					const date = new Date();
-					const hour = date.getHours();
-					const minute = date.getMinutes();
-					const str_time = hour+":"+minute;
-					var rawText = $("#text").val();
-
-					// Hide welcome message on first message
-					const welcomeMsg = document.querySelector('.welcome-message');
-					if (welcomeMsg) {
-						welcomeMsg.style.display = 'none';
-					}
-
-					var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">'+ str_time + '</span></div><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/3177/3177440.png" class="rounded-circle user_img_msg"></div></div>';
-					
-					$("#text").val("");
-					$("#messageFormeight").append(userHtml);
-					$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-
-					// Show typing indicator
-					showTyping();
-
-					$.ajax({
-						data: {
-							msg: rawText,	
-						},
-						type: "POST",
-						url: "/get",
-					}).done(function(data) {
-						// Hide typing indicator
-						hideTyping();
-						
-						var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data + '<span class="msg_time">' + str_time + '</span></div></div>';
-						$("#messageFormeight").append($.parseHTML(botHtml));
-						$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-					});
-					event.preventDefault();
-				});
-
-				// Auto-scroll to bottom on page load
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			});
-		</script>
-        
-    </body>
-</html> -->
-
-<!-- <!DOCTYPE html>
-<html>
-	<head>
-		<title>Medical Chatbot</title>
-		<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/387/387569.png" type="image/png">
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-		<style>
-			:root {
-				--primary-gradient: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
-				--medical-primary: #2563eb;
-				--medical-secondary: #06b6d4;
-				--medical-accent: #0ea5e9;
-				--bg-primary: #f8fafc;
-				--bg-secondary: #f1f5f9;
-				--text-primary: #2d3748;
-				--text-secondary: #718096;
-				--border-color: #e2e8f0;
-				--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-				--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-				--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-				--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-			}
-
-			* {
-				margin: 0;
-				padding: 0;
-				box-sizing: border-box;
-			}
-
-			body, html {
-				height: 100%;
-				font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-				background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 30%, #f0f9ff 70%, #e0f2fe 100%);
-				color: var(--text-primary);
-			}
-
-			.container-fluid {
-				padding: 20px;
-			}
-
-			.chat {
-				margin-top: auto;
-				margin-bottom: auto;
-			}
-
-			.card {
-				height: 600px;
-				border-radius: 20px !important;
-				background: rgba(255, 255, 255, 0.95) !important;
-				backdrop-filter: blur(20px);
-				border: 1px solid rgba(255, 255, 255, 0.2) !important;
-				box-shadow: var(--shadow-xl);
-				overflow: hidden;
-			}
-
-			.card-header {
-				border-radius: 20px 20px 0 0 !important;
-				border-bottom: 1px solid var(--border-color) !important;
-				background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-				padding: 24px !important;
-			}
-
-			.card-footer {
-				border-radius: 0 0 20px 20px !important;
-				border-top: 1px solid var(--border-color) !important;
-				background: white !important;
-				padding: 24px !important;
-			}
-
-			.msg_card_body {
-				overflow-y: auto;
-				background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
-				padding: 20px;
-				height: calc(100% - 140px);
-			}
-
-			.user_img {
-				height: 50px;
-				width: 50px;
-				border: 3px solid rgba(255, 255, 255, 0.9);
-				border-radius: 15px !important;
-				object-fit: cover;
-			}
-
-			.user_img_msg {
-				height: 40px;
-				width: 40px;
-				border: 2px solid rgba(255, 255, 255, 0.9);
-				border-radius: 12px !important;
-				object-fit: cover;
-			}
-
-			.img_cont {
-				position: relative;
-				height: 50px;
-				width: 50px;
-			}
-
-			.img_cont_msg {
-				height: 40px;
-				width: 40px;
-				position: relative;
-			}
-
-			.online_icon {
-				position: absolute;
-				height: 16px;
-				width: 16px;
-				background: var(--medical-accent);
-				border-radius: 50%;
-				bottom: -2px;
-				right: -2px;
-				border: 3px solid white;
-				box-shadow: var(--shadow-sm);
-				animation: pulse 2s infinite;
-			}
-
-			@keyframes pulse {
-				0% { transform: scale(1); }
-				50% { transform: scale(1.1); }
-				100% { transform: scale(1); }
-			}
-
-			.user_info {
-				margin-left: 15px;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-			}
-
-			.user_info span {
-				font-size: 18px;
-				font-weight: 600;
-				color: var(--text-primary);
-				margin-bottom: 2px;
-			}
-
-			.user_info p {
-				font-size: 14px;
-				color: var(--text-secondary);
-				margin: 0;
-			}
-
-			.msg_cotainer {
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: linear-gradient(135deg, #2563eb, #3b82f6);
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: white;
-				max-width: 70%;
-				animation: fadeInLeft 0.5s ease;
-				margin-bottom: 25px;
-			}
-
-			.msg_cotainer_send {
-				margin-right: 10px;
-				border-radius: 20px 20px 8px 20px;
-				background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: white;
-				max-width: 70%;
-				animation: fadeInRight 0.5s ease;
-				margin-bottom: 25px;
-			}
-
-			.msg_time {
-				position: absolute;
-				left: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.msg_time_send {
-				position: absolute;
-				right: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.type_msg {
-				background: var(--bg-secondary) !important;
-				border: 2px solid var(--border-color) !important;
-				color: var(--text-primary) !important;
-				border-radius: 15px 0 0 15px !important;
-				padding: 12px 16px !important;
-				font-size: 15px;
-				transition: all 0.3s ease;
-				font-family: inherit;
-			}
-
-			.type_msg:focus {
-				box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-				outline: 0px !important;
-				border-color: var(--medical-primary) !important;
-			}
-
-			.type_msg::placeholder {
-				color: var(--text-secondary);
-			}
-
-			.send_btn {
-				background: var(--primary-gradient) !important;
-				border: none !important;
-				color: white !important;
-				border-radius: 0 15px 15px 0 !important;
-				padding: 12px 20px !important;
-				transition: all 0.3s ease;
-				font-weight: 500;
-				cursor: pointer;
-			}
-
-			.send_btn:hover {
-				transform: translateY(-1px);
-				box-shadow: var(--shadow-md);
-			}
-
-			.send_btn:active {
-				transform: translateY(0);
-			}
-
-			.input-group {
-				border-radius: 15px;
-				overflow: hidden;
-				box-shadow: var(--shadow-sm);
-			}
-
-			/* Welcome message */
-			.welcome-message {
-				text-align: center;
-				padding: 40px 20px;
-				color: var(--text-secondary);
-			}
-
-			.welcome-message h4 {
-				color: var(--medical-primary);
-				font-weight: 600;
-				margin-bottom: 10px;
-			}
-
-			.welcome-message p {
-				font-size: 14px;
-				line-height: 1.5;
-			}
-
-			.bot-icon {
-				width: 60px;
-				height: 60px;
-				background: var(--primary-gradient);
-				border-radius: 15px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				margin: 0 auto 20px;
-				color: white;
-				font-size: 24px;
-			}
-
-			/* Quick actions */
-			.quick-actions {
-				display: flex;
-				gap: 8px;
-				margin-bottom: 20px;
-				flex-wrap: wrap;
-				justify-content: center;
-			}
-
-			.quick-action {
-				padding: 8px 16px;
-				background: rgba(37, 99, 235, 0.1);
-				color: var(--medical-primary);
-				border: 1px solid rgba(37, 99, 235, 0.2);
-				border-radius: 20px;
-				font-size: 13px;
-				cursor: pointer;
-				transition: all 0.3s ease;
-				font-weight: 500;
-			}
-
-			.quick-action:hover {
-				background: var(--medical-primary);
-				color: white;
-				transform: translateY(-1px);
-			}
-
-			/* Animations */
-			@keyframes fadeInLeft {
-				from { 
-					opacity: 0; 
-					transform: translateX(-20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			@keyframes fadeInRight {
-				from { 
-					opacity: 0; 
-					transform: translateX(20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			/* Custom Scrollbar */
-			.msg_card_body::-webkit-scrollbar {
-				width: 6px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-track {
-				background: transparent;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb {
-				background: var(--border-color);
-				border-radius: 3px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb:hover {
-				background: var(--text-secondary);
-			}
-
-			/* Typing indicator */
-			.typing-indicator {
-				display: flex;
-				align-items: center;
-				padding: 16px 20px;
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: #f1f5f9;
-				color: var(--text-secondary);
-				max-width: 70%;
-				margin-bottom: 25px;
-			}
-
-			.typing-dots {
-				display: flex;
-				gap: 4px;
-			}
-
-			.typing-dots span {
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				background: var(--text-secondary);
-				animation: typing 1.4s infinite;
-			}
-
-			.typing-dots span:nth-child(2) {
-				animation-delay: 0.2s;
-			}
-
-			.typing-dots span:nth-child(3) {
-				animation-delay: 0.4s;
-			}
-
-			@keyframes typing {
-				0%, 60%, 100% {
-					transform: translateY(0);
-					opacity: 0.5;
-				}
-				30% {
-					transform: translateY(-10px);
-					opacity: 1;
-				}
-			}
-
-			/* Responsive Design */
-			@media(max-width: 768px) {
-				.msg_cotainer,
-				.msg_cotainer_send {
-					max-width: 85%;
-				}
-				
-				.card {
-					height: 90vh;
-					border-radius: 15px !important;
-				}
-				
-				.card-header,
-				.card-footer {
-					padding: 16px !important;
-				}
-
-				.container-fluid {
-					padding: 10px;
-				}
-			}
-		</style>
-	</head>
-	
-	<body>
-		<div class="container-fluid h-100">
-			<div class="row justify-content-center h-100">		
-				<div class="col-md-8 col-xl-6 chat">
-					<div class="card">
-						<div class="card-header msg_head">
-							<div class="d-flex bd-highlight">
-								<div class="img_cont">
-									<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img">
-									<span class="online_icon"></span>
-								</div>
-								<div class="user_info">
-									<span>Medical AI Assistant</span>
-									<p>🩺 Here to help with your health questions</p>
-								</div>
-							</div>
-						</div>
-						<div id="messageFormeight" class="card-body msg_card_body">
-							<div class="welcome-message">
-								<div class="bot-icon">
-									<i class="fas fa-stethoscope"></i>
-								</div>
-								<h4>Welcome to Medical AI Assistant</h4>
-								<p>I'm here to help answer your health and medical questions. Please note that I provide general information and should not replace professional medical advice.</p>
-								<div class="quick-actions">
-									<div class="quick-action" onclick="setMessage('Tell me about common symptoms of flu')">💊 Flu Symptoms</div>
-									<div class="quick-action" onclick="setMessage('What are the benefits of regular exercise?')">🏃‍♂️ Exercise Benefits</div>
-									<div class="quick-action" onclick="setMessage('How much water should I drink daily?')">💧 Daily Water Intake</div>
-									<div class="quick-action" onclick="setMessage('What foods are good for immunity?')">🥗 Immunity Foods</div>
-								</div>
-							</div>
-						</div>
-						<div class="card-footer">
-							<form id="messageArea" class="input-group">
-                                <input type="text" id="text" name="msg" placeholder="Ask me about your health concerns..." autocomplete="off" class="form-control type_msg" required/>
-								<div class="input-group-append">
-									<button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-paper-plane"></i></button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<script>
-			function setMessage(message) {
-				document.getElementById('text').value = message;
-				document.getElementById('text').focus();
-				// Hide welcome message after first interaction
-				const welcomeMsg = document.querySelector('.welcome-message');
-				if (welcomeMsg) {
-					welcomeMsg.style.display = 'none';
-				}
-			}
-
-			function showTyping() {
-				const typingHtml = '<div class="d-flex justify-content-start mb-4" id="typing-indicator"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>';
-				$("#messageFormeight").append(typingHtml);
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			}
-
-			function hideTyping() {
-				$("#typing-indicator").remove();
-			}
-
-			$(document).ready(function() {
-				$("#messageArea").on("submit", function(event) {
-					const date = new Date();
-					const hour = date.getHours();
-					const minute = date.getMinutes();
-					const str_time = hour+":"+minute;
-					var rawText = $("#text").val();
-
-					// Hide welcome message on first message
-					const welcomeMsg = document.querySelector('.welcome-message');
-					if (welcomeMsg) {
-						welcomeMsg.style.display = 'none';
-					}
-
-					var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">'+ str_time + '</span></div><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/3177/3177440.png" class="rounded-circle user_img_msg"></div></div>';
-					
-					$("#text").val("");
-					$("#messageFormeight").append(userHtml);
-					$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-
-					// Show typing indicator
-					showTyping();
-
-					$.ajax({
-						data: {
-							msg: rawText,	
-						},
-						type: "POST",
-						url: "/get",
-					}).done(function(data) {
-						// Hide typing indicator
-						hideTyping();
-						
-						var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data + '<span class="msg_time">' + str_time + '</span></div></div>';
-						$("#messageFormeight").append($.parseHTML(botHtml));
-						$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-					});
-					event.preventDefault();
-				});
-
-				// Auto-scroll to bottom on page load
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			});
-		</script>
-        
-    </body>
-</html> -->
-
-<!-- <!DOCTYPE html>
-<html>
-	<head>
-		<title>Medical Chatbot</title>
-		<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/387/387569.png" type="image/png">
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-		<style>
-			:root {
-				--primary-gradient: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
-				--medical-primary: #2563eb;
-				--medical-secondary: #06b6d4;
-				--medical-accent: #0ea5e9;
-				--bg-primary: #f8fafc;
-				--bg-secondary: #f1f5f9;
-				--text-primary: #2d3748;
-				--text-secondary: #718096;
-				--border-color: #e2e8f0;
-				--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-				--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-				--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-				--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-			}
-
-			* {
-				margin: 0;
-				padding: 0;
-				box-sizing: border-box;
-			}
-
-			body, html {
-				height: 100%;
-				font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-				background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 30%, #1e40af 70%, #1e3a8a 100%);
-				color: var(--text-primary);
-			}
-
-			.container-fluid {
-				padding: 20px;
-			}
-
-			.chat {
-				margin-top: auto;
-				margin-bottom: auto;
-			}
-
-			.card {
-				height: 600px;
-				border-radius: 20px !important;
-				background: rgba(255, 255, 255, 0.95) !important;
-				backdrop-filter: blur(20px);
-				border: 1px solid rgba(255, 255, 255, 0.2) !important;
-				box-shadow: var(--shadow-xl);
-				overflow: hidden;
-			}
-
-			.card-header {
-				border-radius: 20px 20px 0 0 !important;
-				border-bottom: 1px solid var(--border-color) !important;
-				background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-				padding: 24px !important;
-			}
-
-			.card-footer {
-				border-radius: 0 0 20px 20px !important;
-				border-top: 1px solid var(--border-color) !important;
-				background: white !important;
-				padding: 24px !important;
-			}
-
-			.msg_card_body {
-				overflow-y: auto;
-				background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
-				padding: 20px;
-				height: calc(100% - 140px);
-			}
-
-			.user_img {
-				height: 50px;
-				width: 50px;
-				border: 3px solid rgba(255, 255, 255, 0.9);
-				border-radius: 15px !important;
-				object-fit: cover;
-			}
-
-			.user_img_msg {
-				height: 40px;
-				width: 40px;
-				border: 2px solid rgba(255, 255, 255, 0.9);
-				border-radius: 12px !important;
-				object-fit: cover;
-			}
-
-			.img_cont {
-				position: relative;
-				height: 50px;
-				width: 50px;
-			}
-
-			.img_cont_msg {
-				height: 40px;
-				width: 40px;
-				position: relative;
-			}
-
-			.online_icon {
-				position: absolute;
-				height: 16px;
-				width: 16px;
-				background: var(--medical-accent);
-				border-radius: 50%;
-				bottom: -2px;
-				right: -2px;
-				border: 3px solid white;
-				box-shadow: var(--shadow-sm);
-				animation: pulse 2s infinite;
-			}
-
-			@keyframes pulse {
-				0% { transform: scale(1); }
-				50% { transform: scale(1.1); }
-				100% { transform: scale(1); }
-			}
-
-			.user_info {
-				margin-left: 15px;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-			}
-
-			.user_info span {
-				font-size: 18px;
-				font-weight: 600;
-				color: var(--text-primary);
-				margin-bottom: 2px;
-			}
-
-			.user_info p {
-				font-size: 14px;
-				color: var(--text-secondary);
-				margin: 0;
-			}
-
-			.msg_cotainer {
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: var(--text-primary);
-				max-width: 70%;
-				animation: fadeInLeft 0.5s ease;
-				margin-bottom: 25px;
-				border: 1px solid #cbd5e1;
-			}
-
-			.msg_cotainer_send {
-				margin-right: 10px;
-				border-radius: 20px 20px 8px 20px;
-				background: linear-gradient(135deg, #1e40af, #1e3a8a);
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: white;
-				max-width: 70%;
-				animation: fadeInRight 0.5s ease;
-				margin-bottom: 25px;
-			}
-
-			.msg_time {
-				position: absolute;
-				left: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.msg_time_send {
-				position: absolute;
-				right: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.type_msg {
-				background: var(--bg-secondary) !important;
-				border: 2px solid var(--border-color) !important;
-				color: var(--text-primary) !important;
-				border-radius: 15px 0 0 15px !important;
-				padding: 12px 16px !important;
-				font-size: 15px;
-				transition: all 0.3s ease;
-				font-family: inherit;
-			}
-
-			.type_msg:focus {
-				box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-				outline: 0px !important;
-				border-color: var(--medical-primary) !important;
-			}
-
-			.type_msg::placeholder {
-				color: var(--text-secondary);
-			}
-
-			.send_btn {
-				background: var(--primary-gradient) !important;
-				border: none !important;
-				color: white !important;
-				border-radius: 0 15px 15px 0 !important;
-				padding: 12px 20px !important;
-				transition: all 0.3s ease;
-				font-weight: 500;
-				cursor: pointer;
-			}
-
-			.send_btn:hover {
-				transform: translateY(-1px);
-				box-shadow: var(--shadow-md);
-			}
-
-			.send_btn:active {
-				transform: translateY(0);
-			}
-
-			.input-group {
-				border-radius: 15px;
-				overflow: hidden;
-				box-shadow: var(--shadow-sm);
-			}
-
-			/* Welcome message */
-			.welcome-message {
-				text-align: center;
-				padding: 40px 20px;
-				color: var(--text-secondary);
-			}
-
-			.welcome-message h4 {
-				color: var(--medical-primary);
-				font-weight: 600;
-				margin-bottom: 10px;
-			}
-
-			.welcome-message p {
-				font-size: 14px;
-				line-height: 1.5;
-			}
-
-			.bot-icon {
-				width: 60px;
-				height: 60px;
-				background: var(--primary-gradient);
-				border-radius: 15px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				margin: 0 auto 20px;
-				color: white;
-				font-size: 24px;
-			}
-
-			/* Quick actions */
-			.quick-actions {
-				display: flex;
-				gap: 8px;
-				margin-bottom: 20px;
-				flex-wrap: wrap;
-				justify-content: center;
-			}
-
-			.quick-action {
-				padding: 8px 16px;
-				background: rgba(37, 99, 235, 0.1);
-				color: var(--medical-primary);
-				border: 1px solid rgba(37, 99, 235, 0.2);
-				border-radius: 20px;
-				font-size: 13px;
-				cursor: pointer;
-				transition: all 0.3s ease;
-				font-weight: 500;
-			}
-
-			.quick-action:hover {
-				background: var(--medical-primary);
-				color: white;
-				transform: translateY(-1px);
-			}
-
-			/* Animations */
-			@keyframes fadeInLeft {
-				from { 
-					opacity: 0; 
-					transform: translateX(-20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			@keyframes fadeInRight {
-				from { 
-					opacity: 0; 
-					transform: translateX(20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			/* Custom Scrollbar */
-			.msg_card_body::-webkit-scrollbar {
-				width: 6px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-track {
-				background: transparent;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb {
-				background: var(--border-color);
-				border-radius: 3px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb:hover {
-				background: var(--text-secondary);
-			}
-
-			/* Typing indicator */
-			.typing-indicator {
-				display: flex;
-				align-items: center;
-				padding: 16px 20px;
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: #f1f5f9;
-				color: var(--text-secondary);
-				max-width: 70%;
-				margin-bottom: 25px;
-			}
-
-			.typing-dots {
-				display: flex;
-				gap: 4px;
-			}
-
-			.typing-dots span {
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				background: var(--text-secondary);
-				animation: typing 1.4s infinite;
-			}
-
-			.typing-dots span:nth-child(2) {
-				animation-delay: 0.2s;
-			}
-
-			.typing-dots span:nth-child(3) {
-				animation-delay: 0.4s;
-			}
-
-			@keyframes typing {
-				0%, 60%, 100% {
-					transform: translateY(0);
-					opacity: 0.5;
-				}
-				30% {
-					transform: translateY(-10px);
-					opacity: 1;
-				}
-			}
-
-			/* Responsive Design */
-			@media(max-width: 768px) {
-				.msg_cotainer,
-				.msg_cotainer_send {
-					max-width: 85%;
-				}
-				
-				.card {
-					height: 90vh;
-					border-radius: 15px !important;
-				}
-				
-				.card-header,
-				.card-footer {
-					padding: 16px !important;
-				}
-
-				.container-fluid {
-					padding: 10px;
-				}
-			}
-		</style>
-	</head>
-	
-	<body>
-		<div class="container-fluid h-100">
-			<div class="row justify-content-center h-100">		
-				<div class="col-md-8 col-xl-6 chat">
-					<div class="card">
-						<div class="card-header msg_head">
-							<div class="d-flex bd-highlight">
-								<div class="img_cont">
-									<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img">
-									<span class="online_icon"></span>
-								</div>
-								<div class="user_info">
-									<span>Medical AI Assistant</span>
-									<p>🩺 Here to help with your health questions</p>
-								</div>
-							</div>
-						</div>
-						<div id="messageFormeight" class="card-body msg_card_body">
-							<div class="welcome-message">
-								<div class="bot-icon">
-									<i class="fas fa-stethoscope"></i>
-								</div>
-								<h4>Welcome to Medical AI Assistant</h4>
-								<p>I'm here to help answer your health and medical questions. Please note that I provide general information and should not replace professional medical advice.</p>
-								<div class="quick-actions">
-									<div class="quick-action" onclick="setMessage('Tell me about common symptoms of flu')">💊 Flu Symptoms</div>
-									<div class="quick-action" onclick="setMessage('What are the benefits of regular exercise?')">🏃‍♂️ Exercise Benefits</div>
-									<div class="quick-action" onclick="setMessage('How much water should I drink daily?')">💧 Daily Water Intake</div>
-									<div class="quick-action" onclick="setMessage('What foods are good for immunity?')">🥗 Immunity Foods</div>
-								</div>
-							</div>
-						</div>
-						<div class="card-footer">
-							<form id="messageArea" class="input-group">
-                                <input type="text" id="text" name="msg" placeholder="Ask me about your health concerns..." autocomplete="off" class="form-control type_msg" required/>
-								<div class="input-group-append">
-									<button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-paper-plane"></i></button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<script>
-			function setMessage(message) {
-				document.getElementById('text').value = message;
-				document.getElementById('text').focus();
-				// Hide welcome message after first interaction
-				const welcomeMsg = document.querySelector('.welcome-message');
-				if (welcomeMsg) {
-					welcomeMsg.style.display = 'none';
-				}
-			}
-
-			function showTyping() {
-				const typingHtml = '<div class="d-flex justify-content-start mb-4" id="typing-indicator"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>';
-				$("#messageFormeight").append(typingHtml);
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			}
-
-			function hideTyping() {
-				$("#typing-indicator").remove();
-			}
-
-			$(document).ready(function() {
-				$("#messageArea").on("submit", function(event) {
-					const date = new Date();
-					const hour = date.getHours();
-					const minute = date.getMinutes();
-					const str_time = hour+":"+minute;
-					var rawText = $("#text").val();
-
-					// Hide welcome message on first message
-					const welcomeMsg = document.querySelector('.welcome-message');
-					if (welcomeMsg) {
-						welcomeMsg.style.display = 'none';
-					}
-
-					var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">'+ str_time + '</span></div><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/3177/3177440.png" class="rounded-circle user_img_msg"></div></div>';
-					
-					$("#text").val("");
-					$("#messageFormeight").append(userHtml);
-					$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-
-					// Show typing indicator
-					showTyping();
-
-					$.ajax({
-						data: {
-							msg: rawText,	
-						},
-						type: "POST",
-						url: "/get",
-					}).done(function(data) {
-						// Hide typing indicator
-						hideTyping();
-						
-						var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data + '<span class="msg_time">' + str_time + '</span></div></div>';
-						$("#messageFormeight").append($.parseHTML(botHtml));
-						$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-					});
-					event.preventDefault();
-				});
-
-				// Auto-scroll to bottom on page load
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			});
-		</script>
-        
-    </body>
-</html> -->
-
-<!-- <!DOCTYPE html>
-<html>
-	<head>
-		<title>Medical Chatbot</title>
-		<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/387/387569.png" type="image/png">
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-		<style>
-			:root {
-				--primary-gradient: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
-				--medical-primary: #2563eb;
-				--medical-secondary: #06b6d4;
-				--medical-accent: #0ea5e9;
-				--bg-primary: #f8fafc;
-				--bg-secondary: #f1f5f9;
-				--text-primary: #2d3748;
-				--text-secondary: #718096;
-				--border-color: #e2e8f0;
-				--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-				--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-				--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-				--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-			}
-
-			* {
-				margin: 0;
-				padding: 0;
-				box-sizing: border-box;
-			}
-
-			body, html {
-				height: 100%;
-				font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-				background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 30%, #1e40af 70%, #1e3a8a 100%);
-				color: var(--text-primary);
-			}
-
-			.container-fluid {
-				padding: 20px;
-			}
-
-			.chat {
-				margin-top: auto;
-				margin-bottom: auto;
-			}
-
-			.card {
-				height: 600px;
-				border-radius: 20px !important;
-				background: rgba(255, 255, 255, 0.95) !important;
-				backdrop-filter: blur(20px);
-				border: 1px solid rgba(255, 255, 255, 0.2) !important;
-				box-shadow: var(--shadow-xl);
-				overflow: hidden;
-			}
-
-			.card-header {
-				border-radius: 20px 20px 0 0 !important;
-				border-bottom: 1px solid var(--border-color) !important;
-				background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-				padding: 24px !important;
-			}
-
-			.card-footer {
-				border-radius: 0 0 20px 20px !important;
-				border-top: 1px solid var(--border-color) !important;
-				background: white !important;
-				padding: 24px !important;
-			}
-
-			.msg_card_body {
-				overflow-y: auto;
-				background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
-				padding: 20px;
-				height: calc(100% - 140px);
-			}
-
-			.user_img {
-				height: 50px;
-				width: 50px;
-				border: 3px solid rgba(255, 255, 255, 0.9);
-				border-radius: 15px !important;
-				object-fit: cover;
-			}
-
-			.user_img_msg {
-				height: 40px;
-				width: 40px;
-				border: 2px solid rgba(255, 255, 255, 0.9);
-				border-radius: 12px !important;
-				object-fit: cover;
-			}
-
-			.img_cont {
-				position: relative;
-				height: 50px;
-				width: 50px;
-			}
-
-			.img_cont_msg {
-				height: 40px;
-				width: 40px;
-				position: relative;
-			}
-
-			.online_icon {
-				position: absolute;
-				height: 16px;
-				width: 16px;
-				background: var(--medical-accent);
-				border-radius: 50%;
-				bottom: -2px;
-				right: -2px;
-				border: 3px solid white;
-				box-shadow: var(--shadow-sm);
-				animation: pulse 2s infinite;
-			}
-
-			@keyframes pulse {
-				0% { transform: scale(1); }
-				50% { transform: scale(1.1); }
-				100% { transform: scale(1); }
-			}
-
-			.user_info {
-				margin-left: 15px;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-			}
-
-			.user_info span {
-				font-size: 18px;
-				font-weight: 600;
-				color: var(--text-primary);
-				margin-bottom: 2px;
-			}
-
-			.user_info p {
-				font-size: 14px;
-				color: var(--text-secondary);
-				margin: 0;
-			}
-
-			.msg_cotainer {
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: linear-gradient(135deg, #1e40af, #1e3a8a);
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: white;
-				max-width: 70%;
-				animation: fadeInLeft 0.5s ease;
-				margin-bottom: 25px;
-			}
-
-			.msg_cotainer_send {
-				margin-right: 10px;
-				border-radius: 20px 20px 8px 20px;
-				background: linear-gradient(135deg, #3b82f6, #60a5fa);
-				padding: 16px 20px;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-				color: white;
-				max-width: 70%;
-				animation: fadeInRight 0.5s ease;
-				margin-bottom: 25px;
-			}
-
-			.msg_time {
-				position: absolute;
-				left: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.msg_time_send {
-				position: absolute;
-				right: 0;
-				bottom: -20px;
-				color: var(--text-secondary);
-				font-size: 11px;
-				opacity: 0.7;
-			}
-
-			.type_msg {
-				background: var(--bg-secondary) !important;
-				border: 2px solid var(--border-color) !important;
-				color: var(--text-primary) !important;
-				border-radius: 15px 0 0 15px !important;
-				padding: 12px 16px !important;
-				font-size: 15px;
-				transition: all 0.3s ease;
-				font-family: inherit;
-			}
-
-			.type_msg:focus {
-				box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-				outline: 0px !important;
-				border-color: var(--medical-primary) !important;
-			}
-
-			.type_msg::placeholder {
-				color: var(--text-secondary);
-			}
-
-			.send_btn {
-				background: var(--primary-gradient) !important;
-				border: none !important;
-				color: white !important;
-				border-radius: 0 15px 15px 0 !important;
-				padding: 12px 20px !important;
-				transition: all 0.3s ease;
-				font-weight: 500;
-				cursor: pointer;
-			}
-
-			.send_btn:hover {
-				transform: translateY(-1px);
-				box-shadow: var(--shadow-md);
-			}
-
-			.send_btn:active {
-				transform: translateY(0);
-			}
-
-			.input-group {
-				border-radius: 15px;
-				overflow: hidden;
-				box-shadow: var(--shadow-sm);
-			}
-
-			/* Welcome message */
-			.welcome-message {
-				text-align: center;
-				padding: 40px 20px;
-				color: var(--text-secondary);
-			}
-
-			.welcome-message h4 {
-				color: var(--medical-primary);
-				font-weight: 600;
-				margin-bottom: 10px;
-			}
-
-			.welcome-message p {
-				font-size: 14px;
-				line-height: 1.5;
-			}
-
-			.bot-icon {
-				width: 60px;
-				height: 60px;
-				background: var(--primary-gradient);
-				border-radius: 15px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				margin: 0 auto 20px;
-				color: white;
-				font-size: 24px;
-			}
-
-			/* Quick actions */
-			.quick-actions {
-				display: flex;
-				gap: 8px;
-				margin-bottom: 20px;
-				flex-wrap: wrap;
-				justify-content: center;
-			}
-
-			.quick-action {
-				padding: 8px 16px;
-				background: rgba(37, 99, 235, 0.1);
-				color: var(--medical-primary);
-				border: 1px solid rgba(37, 99, 235, 0.2);
-				border-radius: 20px;
-				font-size: 13px;
-				cursor: pointer;
-				transition: all 0.3s ease;
-				font-weight: 500;
-			}
-
-			.quick-action:hover {
-				background: var(--medical-primary);
-				color: white;
-				transform: translateY(-1px);
-			}
-
-			/* Animations */
-			@keyframes fadeInLeft {
-				from { 
-					opacity: 0; 
-					transform: translateX(-20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			@keyframes fadeInRight {
-				from { 
-					opacity: 0; 
-					transform: translateX(20px); 
-				}
-				to { 
-					opacity: 1; 
-					transform: translateX(0); 
-				}
-			}
-
-			/* Custom Scrollbar */
-			.msg_card_body::-webkit-scrollbar {
-				width: 6px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-track {
-				background: transparent;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb {
-				background: var(--border-color);
-				border-radius: 3px;
-			}
-
-			.msg_card_body::-webkit-scrollbar-thumb:hover {
-				background: var(--text-secondary);
-			}
-
-			/* Typing indicator */
-			.typing-indicator {
-				display: flex;
-				align-items: center;
-				padding: 16px 20px;
-				margin-left: 10px;
-				border-radius: 20px 20px 20px 8px;
-				background: #f1f5f9;
-				color: var(--text-secondary);
-				max-width: 70%;
-				margin-bottom: 25px;
-			}
-
-			.typing-dots {
-				display: flex;
-				gap: 4px;
-			}
-
-			.typing-dots span {
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				background: var(--text-secondary);
-				animation: typing 1.4s infinite;
-			}
-
-			.typing-dots span:nth-child(2) {
-				animation-delay: 0.2s;
-			}
-
-			.typing-dots span:nth-child(3) {
-				animation-delay: 0.4s;
-			}
-
-			@keyframes typing {
-				0%, 60%, 100% {
-					transform: translateY(0);
-					opacity: 0.5;
-				}
-				30% {
-					transform: translateY(-10px);
-					opacity: 1;
-				}
-			}
-
-			/* Responsive Design */
-			@media(max-width: 768px) {
-				.msg_cotainer,
-				.msg_cotainer_send {
-					max-width: 85%;
-				}
-				
-				.card {
-					height: 90vh;
-					border-radius: 15px !important;
-				}
-				
-				.card-header,
-				.card-footer {
-					padding: 16px !important;
-				}
-
-				.container-fluid {
-					padding: 10px;
-				}
-			}
-		</style>
-	</head>
-	
-	<body>
-		<div class="container-fluid h-100">
-			<div class="row justify-content-center h-100">		
-				<div class="col-md-8 col-xl-6 chat">
-					<div class="card">
-						<div class="card-header msg_head">
-							<div class="d-flex bd-highlight">
-								<div class="img_cont">
-									<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img">
-									<span class="online_icon"></span>
-								</div>
-								<div class="user_info">
-									<span>Medical AI Assistant</span>
-									<p>🩺 Here to help with your health questions</p>
-								</div>
-							</div>
-						</div>
-						<div id="messageFormeight" class="card-body msg_card_body">
-							<div class="welcome-message">
-								<div class="bot-icon">
-									<i class="fas fa-stethoscope"></i>
-								</div>
-								<h4>Welcome to Medical AI Assistant</h4>
-								<p>I'm here to help answer your health and medical questions. Please note that I provide general information and should not replace professional medical advice.</p>
-								<div class="quick-actions">
-									<div class="quick-action" onclick="setMessage('Tell me about common symptoms of flu')">💊 Flu Symptoms</div>
-									<div class="quick-action" onclick="setMessage('What are the benefits of regular exercise?')">🏃‍♂️ Exercise Benefits</div>
-									<div class="quick-action" onclick="setMessage('How much water should I drink daily?')">💧 Daily Water Intake</div>
-									<div class="quick-action" onclick="setMessage('What foods are good for immunity?')">🥗 Immunity Foods</div>
-								</div>
-							</div>
-						</div>
-						<div class="card-footer">
-							<form id="messageArea" class="input-group">
-                                <input type="text" id="text" name="msg" placeholder="Ask me about your health concerns..." autocomplete="off" class="form-control type_msg" required/>
-								<div class="input-group-append">
-									<button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-paper-plane"></i></button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<script>
-			function setMessage(message) {
-				document.getElementById('text').value = message;
-				document.getElementById('text').focus();
-				// Hide welcome message after first interaction
-				const welcomeMsg = document.querySelector('.welcome-message');
-				if (welcomeMsg) {
-					welcomeMsg.style.display = 'none';
-				}
-			}
-
-			function showTyping() {
-				const typingHtml = '<div class="d-flex justify-content-start mb-4" id="typing-indicator"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>';
-				$("#messageFormeight").append(typingHtml);
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			}
-
-			function hideTyping() {
-				$("#typing-indicator").remove();
-			}
-
-			$(document).ready(function() {
-				$("#messageArea").on("submit", function(event) {
-					const date = new Date();
-					const hour = date.getHours();
-					const minute = date.getMinutes();
-					const str_time = hour+":"+minute;
-					var rawText = $("#text").val();
-
-					// Hide welcome message on first message
-					const welcomeMsg = document.querySelector('.welcome-message');
-					if (welcomeMsg) {
-						welcomeMsg.style.display = 'none';
-					}
-
-					var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">'+ str_time + '</span></div><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/3177/3177440.png" class="rounded-circle user_img_msg"></div></div>';
-					
-					$("#text").val("");
-					$("#messageFormeight").append(userHtml);
-					$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-
-					// Show typing indicator
-					showTyping();
-
-					$.ajax({
-						data: {
-							msg: rawText,	
-						},
-						type: "POST",
-						url: "/get",
-					}).done(function(data) {
-						// Hide typing indicator
-						hideTyping();
-						
-						var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data + '<span class="msg_time">' + str_time + '</span></div></div>';
-						$("#messageFormeight").append($.parseHTML(botHtml));
-						$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-					});
-					event.preventDefault();
-				});
-
-				// Auto-scroll to bottom on page load
-				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			});
-		</script>
-        
-    </body>
-</html> -->
-
 <!DOCTYPE html>
 <html>
 	<head>
@@ -2974,6 +379,135 @@
 				}
 			}
 
+			/* Chat sessions sidebar */
+			.chat-sessions {
+				position: fixed;
+				left: 0;
+				top: 0;
+				height: 100%;
+				width: 300px;
+				background: white;
+				box-shadow: var(--shadow-lg);
+				transform: translateX(-100%);
+				transition: transform 0.3s ease;
+				z-index: 1000;
+				padding: 20px;
+				overflow-y: auto;
+			}
+
+			.chat-sessions.active {
+				transform: translateX(0);
+			}
+
+			.sessions-header {
+				display: flex;
+				justify-content: between;
+				align-items: center;
+				margin-bottom: 20px;
+				padding-bottom: 15px;
+				border-bottom: 1px solid var(--border-color);
+			}
+
+			.sessions-header h5 {
+				margin: 0;
+				flex: 1;
+			}
+
+			.close-sessions {
+				background: none;
+				border: none;
+				font-size: 20px;
+				cursor: pointer;
+				color: var(--text-secondary);
+			}
+
+			.session-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+
+			.session-item {
+				padding: 12px 15px;
+				margin-bottom: 8px;
+				border-radius: 12px;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				border: 2px solid transparent;
+			}
+
+			.session-item:hover {
+				background: var(--bg-secondary);
+			}
+
+			.session-item.active {
+				background: var(--medical-primary);
+				color: white;
+				border-color: var(--medical-primary);
+			}
+
+			.session-title {
+				font-weight: 500;
+				margin-bottom: 4px;
+			}
+
+			.session-meta {
+				font-size: 12px;
+				opacity: 0.7;
+			}
+
+			.new-session-btn {
+				width: 100%;
+				padding: 12px;
+				background: var(--primary-gradient);
+				color: white;
+				border: none;
+				border-radius: 12px;
+				cursor: pointer;
+				font-weight: 500;
+				margin-top: 15px;
+				transition: all 0.3s ease;
+			}
+
+			.new-session-btn:hover {
+				transform: translateY(-2px);
+				box-shadow: var(--shadow-md);
+			}
+
+			.menu-toggle {
+				position: fixed;
+				left: 20px;
+				top: 20px;
+				background: var(--primary-gradient);
+				color: white;
+				border: none;
+				border-radius: 50%;
+				width: 50px;
+				height: 50px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				z-index: 999;
+				box-shadow: var(--shadow-lg);
+			}
+
+			/* Overlay for mobile */
+			.overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				display: none;
+				z-index: 999;
+			}
+
+			.overlay.active {
+				display: block;
+			}
+
 			/* Responsive Design */
 			@media(max-width: 768px) {
 				.msg_cotainer,
@@ -2994,11 +528,46 @@
 				.container-fluid {
 					padding: 10px;
 				}
+
+				.chat-sessions {
+					width: 280px;
+				}
 			}
 		</style>
 	</head>
 	
 	<body>
+		<!-- Chat sessions sidebar -->
+		<div class="chat-sessions" id="chatSessions">
+			<div class="sessions-header">
+				<h5>Chat Sessions</h5>
+				<button class="close-sessions" onclick="toggleSessions()">×</button>
+			</div>
+			<ul class="session-list">
+				{% for chat_session in chat_sessions %}
+				<li class="session-item {% if chat_session._id|string == current_session_id %}active{% endif %}" 
+					onclick="switchSession('{{ chat_session._id }}')">
+					<div class="session-title">{{ chat_session.title }}</div>
+					<div class="session-meta">
+						{{ chat_session.last_activity.strftime('%b %d, %H:%M') }} • 
+						{{ chat_session.message_count }} messages
+					</div>
+				</li>
+				{% endfor %}
+			</ul>
+			<button class="new-session-btn" onclick="newSession()">
+				<i class="fas fa-plus"></i> New Chat
+			</button>
+		</div>
+
+		<!-- Overlay for mobile -->
+		<div class="overlay" id="overlay" onclick="toggleSessions()"></div>
+
+		<!-- Menu toggle button -->
+		<button class="menu-toggle" onclick="toggleSessions()">
+			<i class="fas fa-comments"></i>
+		</button>
+
 		<div class="container-fluid h-100">
 			<div class="row justify-content-center h-100">		
 				<div class="col-md-8 col-xl-6 chat">
@@ -3016,6 +585,31 @@
 							</div>
 						</div>
 						<div id="messageFormeight" class="card-body msg_card_body">
+							{% if messages %}
+								{% for message in messages %}
+									{% if message.sender == 'user' %}
+									<div class="d-flex justify-content-end mb-4">
+										<div class="msg_cotainer_send">
+											{{ message.content }}
+											<span class="msg_time_send">{{ message.timestamp.strftime('%H:%M') }}</span>
+										</div>
+										<div class="img_cont_msg">
+											<img src="https://static.vecteezy.com/system/resources/previews/007/319/933/non_2x/black-avatar-person-icons-user-profile-icon-vector.jpg" class="rounded-circle user_img_msg">
+										</div>
+									</div>
+									{% else %}
+									<div class="d-flex justify-content-start mb-4">
+										<div class="img_cont_msg">
+											<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg">
+										</div>
+										<div class="msg_cotainer">
+											{{ message.content }}
+											<span class="msg_time">{{ message.timestamp.strftime('%H:%M') }}</span>
+										</div>
+									</div>
+									{% endif %}
+								{% endfor %}
+							{% else %}
 							<div class="welcome-message">
 								<div class="bot-icon">
 									<i class="fas fa-stethoscope"></i>
@@ -3029,6 +623,7 @@
 									<div class="quick-action" onclick="setMessage('What foods are good for immunity?')">🥗 Immunity Foods</div>
 								</div>
 							</div>
+							{% endif %}
 						</div>
 						<div class="card-footer">
 							<form id="messageArea" class="input-group">
@@ -3044,147 +639,99 @@
 		</div>
 		
 		<script>
-			// function setMessage(message) {
-			// 	document.getElementById('text').value = message;
-			// 	document.getElementById('text').focus();
-			// 	// Hide welcome message after first interaction
-			// 	const welcomeMsg = document.querySelector('.welcome-message');
-			// 	if (welcomeMsg) {
-			// 		welcomeMsg.style.display = 'none';
-			// 	}
-			// }
+			function toggleSessions() {
+				const sessions = document.getElementById('chatSessions');
+				const overlay = document.getElementById('overlay');
+				sessions.classList.toggle('active');
+				overlay.classList.toggle('active');
+			}
 
-			// function showTyping() {
-			// 	const typingHtml = '<div class="d-flex justify-content-start mb-4" id="typing-indicator"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>';
-			// 	$("#messageFormeight").append(typingHtml);
-			// 	$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			// }
+			function switchSession(sessionId) {
+				window.location.href = `/session/${sessionId}`;
+			}
 
-			// function hideTyping() {
-			// 	$("#typing-indicator").remove();
-			// }
+			function newSession() {
+				window.location.href = '/session/new';
+			}
 
-			// $(document).ready(function() {
-			// 	$("#messageArea").on("submit", function(event) {
-			// 		const date = new Date();
-			// 		const hour = date.getHours();
-			// 		const minute = date.getMinutes();
-			// 		const str_time = hour+":"+minute;
-			// 		var rawText = $("#text").val();
-
-			// 		// Hide welcome message on first message
-			// 		const welcomeMsg = document.querySelector('.welcome-message');
-			// 		if (welcomeMsg) {
-			// 			welcomeMsg.style.display = 'none';
-			// 		}
-
-			// 		var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">'+ str_time + '</span></div><div class="img_cont_msg"><img src="https://static.vecteezy.com/system/resources/previews/007/319/933/non_2x/black-avatar-person-icons-user-profile-icon-vector.jpg" class="rounded-circle user_img_msg"></div></div>';
-					
-			// 		$("#text").val("");
-			// 		$("#messageFormeight").append(userHtml);
-			// 		$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-
-			// 		// Show typing indicator
-			// 		showTyping();
-
-			// 		$.ajax({
-			// 			data: {
-			// 				msg: rawText,	
-			// 			},
-			// 			type: "POST",
-			// 			url: "/get",
-			// 		}).done(function(data) {
-			// 			// Hide typing indicator
-			// 			hideTyping();
-						
-			// 			var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data + '<span class="msg_time">' + str_time + '</span></div></div>';
-			// 			$("#messageFormeight").append($.parseHTML(botHtml));
-			// 			$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			// 		});
-			// 		event.preventDefault();
-			// 	});
-
-			// 	// Auto-scroll to bottom on page load
-			// 	$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-			// });
 			function setMessage(message) {
-	document.getElementById('text').value = message;
-	document.getElementById('text').focus();
-	// Hide welcome message after first interaction
-	const welcomeMsg = document.querySelector('.welcome-message');
-	if (welcomeMsg) {
-		welcomeMsg.style.display = 'none';
-	}
-}
+				document.getElementById('text').value = message;
+				document.getElementById('text').focus();
+				// Hide welcome message after first interaction
+				const welcomeMsg = document.querySelector('.welcome-message');
+				if (welcomeMsg) {
+					welcomeMsg.style.display = 'none';
+				}
+			}
 
-function showTyping() {
-	const typingHtml = '<div class="d-flex justify-content-start mb-4" id="typing-indicator"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>';
-	$("#messageFormeight").append(typingHtml);
-	$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-}
+			function showTyping() {
+				const typingHtml = '<div class="d-flex justify-content-start mb-4" id="typing-indicator"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>';
+				$("#messageFormeight").append(typingHtml);
+				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
+			}
 
-function hideTyping() {
-	$("#typing-indicator").remove();
-}
+			function hideTyping() {
+				$("#typing-indicator").remove();
+			}
 
-function getCurrentTime() {
-	const date = new Date();
-	const hour = String(date.getHours()).padStart(2, '0');
-	const minute = String(date.getMinutes()).padStart(2, '0');
-	return hour + ":" + minute;
-}
+			function getCurrentTime() {
+				const date = new Date();
+				const hour = String(date.getHours()).padStart(2, '0');
+				const minute = String(date.getMinutes()).padStart(2, '0');
+				return hour + ":" + minute;
+			}
 
-$(document).ready(function() {
-	$("#messageArea").on("submit", function(event) {
-		const userTime = getCurrentTime();
-		var rawText = $("#text").val();
+			$(document).ready(function() {
+				$("#messageArea").on("submit", function(event) {
+					const userTime = getCurrentTime();
+					var rawText = $("#text").val();
 
-		// Hide welcome message on first message
-		const welcomeMsg = document.querySelector('.welcome-message');
-		if (welcomeMsg) {
-			welcomeMsg.style.display = 'none';
-		}
+					// Hide welcome message on first message
+					const welcomeMsg = document.querySelector('.welcome-message');
+					if (welcomeMsg) {
+						welcomeMsg.style.display = 'none';
+					}
 
-		// User message with user timestamp
-		var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">'+ userTime + '</span></div><div class="img_cont_msg"><img src="https://static.vecteezy.com/system/resources/previews/007/319/933/non_2x/black-avatar-person-icons-user-profile-icon-vector.jpg" class="rounded-circle user_img_msg"></div></div>';
-		
-		$("#text").val("");
-		$("#messageFormeight").append(userHtml);
-		$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
+					// User message with user timestamp
+					var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">'+ userTime + '</span></div><div class="img_cont_msg"><img src="https://static.vecteezy.com/system/resources/previews/007/319/933/non_2x/black-avatar-person-icons-user-profile-icon-vector.jpg" class="rounded-circle user_img_msg"></div></div>';
+					
+					$("#text").val("");
+					$("#messageFormeight").append(userHtml);
+					$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
 
-		// Show typing indicator
-		showTyping();
+					// Show typing indicator
+					showTyping();
 
-		$.ajax({
-			data: {
-				msg: rawText,	
-			},
-			type: "POST",
-			url: "/get",
-		}).done(function(data) {
-			// Hide typing indicator
-			hideTyping();
-			
-			// Get fresh timestamp for bot response
-			const botTime = getCurrentTime();
-			
-			// Clean the response data to remove any stray timestamps or system text
-			let cleanData = data
-				.replace(/\d{2}:\d{2}/g, '') // Remove timestamps from response
-				.replace(/System:\s*/g, '') // Remove "System:" prefixes
-				.replace(/\s+/g, ' ') // Replace multiple spaces with single space
-				.trim(); // Remove leading/trailing whitespace
-			
-			var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + cleanData + '<span class="msg_time">' + botTime + '</span></div></div>';
-			$("#messageFormeight").append($.parseHTML(botHtml));
-			$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-		});
-		event.preventDefault();
-	});
+					$.ajax({
+						data: {
+							msg: rawText,	
+						},
+						type: "POST",
+						url: "/get",
+					}).done(function(data) {
+						// Hide typing indicator
+						hideTyping();
+						
+						// Get fresh timestamp for bot response
+						const botTime = getCurrentTime();
+						
+						// Clean the response data to remove any stray timestamps or system text
+						let cleanData = data
+							.replace(/\d{2}:\d{2}/g, '') // Remove timestamps from response
+							.replace(/System:\s*/g, '') // Remove "System:" prefixes
+							.replace(/\s+/g, ' ') // Replace multiple spaces with single space
+							.trim(); // Remove leading/trailing whitespace
+						
+						var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + cleanData + '<span class="msg_time">' + botTime + '</span></div></div>';
+						$("#messageFormeight").append($.parseHTML(botHtml));
+						$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
+					});
+					event.preventDefault();
+				});
 
-	// Auto-scroll to bottom on page load
-	$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
-});
+				// Auto-scroll to bottom on page load
+				$("#messageFormeight").scrollTop($("#messageFormeight")[0].scrollHeight);
+			});
 		</script>
         
     </body>
