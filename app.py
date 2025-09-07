@@ -152,32 +152,49 @@ def new_session():
     flash('Started a new chat session', 'info')
     return redirect(url_for('index'))
 
-@app.route("/session/delete/<session_id>")
+@app.route("/session/delete/<session_id>", methods=["GET", "POST"])
 def delete_session(session_id):
     if 'user_id' not in session:
+        if request.method == 'POST':
+            return jsonify({"success": False, "error": "Not authenticated"}), 401
         return redirect(url_for('login'))
     
-    # Verify the session belongs to the user
-    session_obj = chat_sessions_collection.find_one({
-        "_id": ObjectId(session_id),
-        "user_id": session['user_id']
-    })
-    
-    if session_obj:
-        # Delete the session and all its messages
-        chat_sessions_collection.delete_one({"_id": ObjectId(session_id)})
-        messages_collection.delete_many({"session_id": session_id})
+    try:
+        # Verify the session belongs to the user
+        session_obj = chat_sessions_collection.find_one({
+            "_id": ObjectId(session_id),
+            "user_id": session['user_id']
+        })
         
-        # If deleting current session, switch to a new one
-        if session.get('current_session_id') == session_id:
-            session.pop('current_session_id', None)
-        
-        flash('Chat session deleted', 'info')
-    else:
-        flash('Invalid chat session', 'error')
-    
-    return redirect(url_for('index'))
-
+        if session_obj:
+            # Delete the session and all its messages
+            chat_sessions_collection.delete_one({"_id": ObjectId(session_id)})
+            messages_collection.delete_many({"session_id": session_id})
+            
+            # If deleting current session, switch to a new one
+            if session.get('current_session_id') == session_id:
+                session.pop('current_session_id', None)
+            
+            if request.method == 'POST':
+                # Return JSON response for AJAX requests
+                return jsonify({"success": True, "message": "Chat session deleted"})
+            else:
+                # Return redirect for regular GET requests
+                flash('Chat session deleted', 'info')
+                return redirect(url_for('index'))
+        else:
+            if request.method == 'POST':
+                return jsonify({"success": False, "error": "Invalid chat session"}), 404
+            else:
+                flash('Invalid chat session', 'error')
+                return redirect(url_for('index'))
+            
+    except Exception as e:
+        if request.method == 'POST':
+            return jsonify({"success": False, "error": str(e)}), 500
+        else:
+            flash('Error deleting session: ' + str(e), 'error')
+            return redirect(url_for('index'))
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
