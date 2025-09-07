@@ -11,8 +11,8 @@ import os
 import hashlib
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from datetime import datetime
-import uuid
+from datetime import datetime, timezone
+import pytz
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your_fallback_secret_key_here')
@@ -50,6 +50,10 @@ except Exception as e:
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+def get_local_time():
+    """Get current local time without timezone information"""
+    return datetime.now()
 
 embeddings = download_hugging_face_embeddings()
 
@@ -90,8 +94,8 @@ def index():
             new_session = {
                 "user_id": user_id,
                 "title": "New Chat",
-                "created_at": datetime.utcnow(),
-                "last_activity": datetime.utcnow(),
+                "created_at": get_local_time(),  # Use local time
+                "last_activity": get_local_time(),  # Use local time
                 "message_count": 0
             }
             result = chat_sessions_collection.insert_one(new_session)
@@ -138,8 +142,8 @@ def new_session():
     new_session = {
         "user_id": session['user_id'],
         "title": "New Chat",
-        "created_at": datetime.utcnow(),
-        "last_activity": datetime.utcnow(),
+        "created_at": get_local_time(),  # Use local time
+        "last_activity": get_local_time(),  # Use local time
         "message_count": 0
     }
     result = chat_sessions_collection.insert_one(new_session)
@@ -193,10 +197,10 @@ def login():
                 session['username'] = user['username']
                 # Clear any previous session ID
                 session.pop('current_session_id', None)
-                # Update last login time
+                # Update last login time with local time
                 users_collection.update_one(
                     {"_id": user['_id']},
-                    {"$set": {"last_login": datetime.utcnow()}}
+                    {"$set": {"last_login": get_local_time()}}  # Use local time
                 )
                 return redirect(url_for('index'))
             else:
@@ -220,12 +224,12 @@ def signup():
             if users_collection.find_one({"username": username}):
                 return render_template('signup.html', error="Username already exists")
             
-            # Create new user
+            # Create new user with local time
             new_user = {
                 "username": username,
                 "password": hashed_password,
                 "email": email,
-                "created_at": datetime.utcnow(),
+                "created_at": get_local_time(),  # Use local time
                 "last_login": None  # No login yet
             }
             
@@ -259,13 +263,13 @@ def chat():
     input = msg
     print(input)
     
-    # Save user message to database
+    # Save user message to database with local time
     user_message = {
         "session_id": current_session_id,
         "user_id": session['user_id'],
         "content": msg,
         "sender": "user",
-        "timestamp": datetime.utcnow()
+        "timestamp": get_local_time()  # Use local time
     }
     messages_collection.insert_one(user_message)
     
@@ -274,21 +278,21 @@ def chat():
     answer = str(response["answer"])
     print("Response : ", answer)
     
-    # Save AI response to database
+    # Save AI response to database with local time
     ai_message = {
         "session_id": current_session_id,
         "user_id": session['user_id'],
         "content": answer,
         "sender": "ai",
-        "timestamp": datetime.utcnow()
+        "timestamp": get_local_time()  # Use local time
     }
     messages_collection.insert_one(ai_message)
     
-    # Update session activity and message count
+    # Update session activity and message count with local time
     chat_sessions_collection.update_one(
         {"_id": ObjectId(current_session_id)},
         {
-            "$set": {"last_activity": datetime.utcnow()},
+            "$set": {"last_activity": get_local_time()},  # Use local time
             "$inc": {"message_count": 2}  # Count both user and AI messages
         }
     )
